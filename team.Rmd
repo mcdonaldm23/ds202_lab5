@@ -1,0 +1,130 @@
+---
+title: "Lab 5"
+author: "Omima Hassan"
+date: "11/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(tidyverse)
+```
+
+For this lab, we’ll be working with the diabetes.txt dataset. This is available on Canvas under Files. There is a pdf called DiabetesExplanation.pdf that explains what each variable means, which should can be pulled directly from my Github account. Briefly, this data consist of 19 variables on 403 subjects who were interviewed in a study to understand the prevalence of obesity, diabetes, and other cardiovascular risk factors in central Virginia for African Americans. Our main variable of interest is glyhb, which stands for Glycosolated Hemoglobin. A high glyhb (> 7.0) is considered an indicator for positive diagnosis of diabetes.
+
+```{r}
+diabetes = read.table('diabetes.txt', header=TRUE)
+head(diabetes)
+```
+
+2.Replace the missing values in the variable frame, indicated by an empty string ‘’, by ‘NA’. 
+```{r}
+diabetes_frame = which(diabetes$frame == '')
+diabetes$frame[diabetes_frame]= "NA"
+```
+
+Also, use function droplevels() to remove empty categorical value ‘’ from frame.
+```{r}
+
+```
+
+3.Drop id, bp.2s, and bp.2d from our dataset. Call this dataset diabetes_reduced.
+```{r}
+diabetes_reduced = subset(diabetes, select = -c(id, bp.2s, bp.2d))
+```
+
+
+4.Using diabetes_reduced, drop any rows having any missing values. Call this new dataset diabetes_clean. For the remaining questions, use this diabetes_clean dataset. Your clean dataset should have 366 rows and 16 columns. To identify the row indices that have a missing value you can use this code:
+
+```{r}
+diabetes_clean = na.omit(diabetes_reduced)  
+```
+
+5.How can we check Step 4 was done correctly?
+```{r}
+nrow(diabetes_clean)
+ncol(diabetes_clean)
+```
+
+
+6.We see that glyhb is highly right skewed. How can we remedy this? What are some potential downsides to our approach? (throwback to Lecture 7 and fbi dataset).
+```{r}
+# Using the log base along the x-axis
+```
+
+
+7.Based on your answer to (6), create a new variable called glyhb_star that is no longer right-skewed. Plot a histogram of glyhb_star to verify that the variable is symmetric. From now on use this glyhb_star variable.
+```{r}
+glyhb_star = log(diabetes_clean$glyhb)
+ggplot(diabetes_clean, aes(glyhb_star)) + geom_histogram() + labs(title = "Histogram of Glycosolated Hemoglobin")
+```
+
+8. Let’s explore some summary statistics before jumping into visualizations. As mentioned before, our main variable of interest is glyhb_star, which is transformed version of glyhb. Create some tables of summary statistics of glyhb_star grouped by variables you are interested in and may help illuminate which variables are associated with diabetes. Describe your findings. For example:
+
+```{r}
+diabetes_clean %>% group_by(frame) %>% summarise(mean.glyhb = mean(glyhb_star))
+diabetes_clean %>% group_by(gender) %>% summarise(mean.glyhb = mean(glyhb_star))
+
+```
+
+
+10.The following table is difficult to unpack. Create a plot to visualize the information. (Hint: look at lec12_script_updated.R and recall what we did for the starwars dataset.)
+```{r}
+
+```
+
+11. Our main variable of interest is glyhb_star. We want to understand its relationship with ratio, bp.1s, age, gender, hip and weight. Further explore how these variables interact and visualize your findings.
+```{r}
+
+```
+
+
+12. Write code to improve this plot so that we can see the distinct patterns for weight and waist across different frame and avoid overplotting. Propose two different plots.
+```{r}
+
+```
+
+
+13.Gather and spread may seem slightly unnatural to use at first, but they are very powerful functions that can transform data into the right format. Explain in your own words what the gather and spread functions do.
+```{r}
+# Gather
+
+# Spread
+```
+
+
+14. Are gather and spread exact complements of each other? Explain.
+```{r}
+
+```
+
+
+15. We fit the following linear regression model:
+```{r}
+fit = lm(glyhb_star ~stab.glu + age + waist + ratio+ factor(frame),data=diabetes_clean)
+ summary(fit)
+```
+
+What insights can be obtain from this model? Explain clearly and make note of the F-statistic and adjusted R-squared. Do the results from our exploratory analysis suggest a linear model is the right approach here? You may reference plots and summary statistics from previous steps.
+
+16. Interpret the estimated regression coefficient for each predictor in fit, regardless of whether or not the predictor is significant.
+```{r}
+
+```
+
+17. We can see the estimated fitted values (Y^) from our model using the following code fit$fitted.values. These estimated fitted values are estimates of what true value? Based on the fit model, calculate the value of Y^ when stab.glu = 90, age = 35, waist = 30, ratio = 5.1, and frame = small.
+```{r}
+
+```
+
+18.Explain the difference between inference and prediction.
+```{r}
+
+```
+
+19. What are advantages/disadvantages to constructing a linear regression model as opposed to a k-NN regression model?
+```{r}
+
+```
+
