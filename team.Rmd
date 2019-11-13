@@ -71,7 +71,12 @@ diabetes_clean %>% group_by(gender) %>% summarise(mean.glyhb = mean(glyhb_star))
 
 10.The following table is difficult to unpack. Create a plot to visualize the information. (Hint: look at lec12_script_updated.R and recall what we did for the starwars dataset.)
 ```{r}
-
+diabetes_clean%>% 
+  group_by(frame,location) %>% 
+  summarize(mean.glyhb_star = mean(glyhb_star,na.rm=TRUE)) %>% 
+  ggplot(aes(frame, mean.glyhb_star, color=location))+ 
+  geom_point()+ 
+  coord_flip()
 ```
 
 11. Our main variable of interest is glyhb_star. We want to understand its relationship with ratio, bp.1s, age, gender, hip and weight. Further explore how these variables interact and visualize your findings.
@@ -82,21 +87,20 @@ diabetes_clean %>% group_by(gender) %>% summarise(mean.glyhb = mean(glyhb_star))
 
 12. Write code to improve this plot so that we can see the distinct patterns for weight and waist across different frame and avoid overplotting. Propose two different plots.
 ```{r}
-
+ggplot(diabetes_clean,aes(y=hip,x=waist,alpha=0.5)) + geom_point(shape=1, size=.5) +geom_smooth()+ facet_wrap(~frame) + labs(title='Weight by Frame',x='Waist', y='Hip')
 ```
 
 
 13.Gather and spread may seem slightly unnatural to use at first, but they are very powerful functions that can transform data into the right format. Explain in your own words what the gather and spread functions do.
 ```{r}
-# Gather
-
-# Spread
+# Gather brings variables that could be collapsed together, to the same column.
+# Spread takes columns that have several forms of information, like date and time, that can be divided into different rows.
 ```
 
 
 14. Are gather and spread exact complements of each other? Explain.
 ```{r}
-
+#You cannot constantly go back and forth from spread and gather because as you gather the information it must all become one. If you spead it, it forgets about the original one, creating a completely new column.
 ```
 
 
@@ -120,7 +124,8 @@ What insights can be obtain from this model? Explain clearly and make note of th
 
 18.Explain the difference between inference and prediction.
 ```{r}
-
+#Inference is what you are given a data set and have to get an output from the date.
+#Prediction is getting another data set and seeing how the old data set helps to build a model.
 ```
 
 19. What are advantages/disadvantages to constructing a linear regression model as opposed to a k-NN regression model?
