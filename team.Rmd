@@ -38,7 +38,7 @@ diabetes_reduced = subset(diabetes, select = -c(id, bp.2s, bp.2d))
 4.Using diabetes_reduced, drop any rows having any missing values. Call this new dataset diabetes_clean. For the remaining questions, use this diabetes_clean dataset. Your clean dataset should have 366 rows and 16 columns. To identify the row indices that have a missing value you can use this code:
 
 ```{r}
-diabetes_clean = na.omit(diabetes_reduced)  
+diabetes_clean = na.omit(diabetes_reduced)
 ```
 
 5.How can we check Step 4 was done correctly?
@@ -50,7 +50,7 @@ ncol(diabetes_clean)
 
 6.We see that glyhb is highly right skewed. How can we remedy this? What are some potential downsides to our approach? (throwback to Lecture 7 and fbi dataset).
 ```{r}
-# Using the log base along the x-axis
+# Using the log base along the x-axis. The down side to this is that the means are all the same.
 ```
 
 
@@ -75,19 +75,37 @@ diabetes_clean%>%
   group_by(frame,location) %>% 
   summarize(mean.glyhb_star = mean(glyhb_star,na.rm=TRUE)) %>% 
   ggplot(aes(frame, mean.glyhb_star, color=location))+ 
-  geom_point()+ 
-  coord_flip()
+  geom_point()
 ```
 
 11. Our main variable of interest is glyhb_star. We want to understand its relationship with ratio, bp.1s, age, gender, hip and weight. Further explore how these variables interact and visualize your findings.
 ```{r}
-
+ggplot(diabetes_clean,aes(glyhb_star, ratio))+ geom_point(size=.5)+ geom_smooth()
 ```
 
+```{r}
+ggplot(diabetes_clean,aes(glyhb_star, bp.1s))+ geom_point(size=.5)+ geom_smooth()
+```
+
+```{r}
+ggplot(diabetes_clean,aes(glyhb_star, age))+ geom_point(size=.5)+ geom_smooth()
+```
+
+```{r}
+ggplot(diabetes_clean,aes(gender,glyhb_star))+ geom_boxplot()
+```
+
+```{r}
+ggplot(diabetes_clean,aes(glyhb_star, hip))+ geom_point(size=.5)+ geom_smooth()
+```
+
+```{r}
+ggplot(diabetes_clean,aes(glyhb_star, weight))+ geom_point(size=.5)+ geom_smooth()
+```
 
 12. Write code to improve this plot so that we can see the distinct patterns for weight and waist across different frame and avoid overplotting. Propose two different plots.
 ```{r}
-ggplot(diabetes_clean,aes(y=hip,x=waist,alpha=0.5)) + geom_point(shape=1, size=.5) +geom_smooth()+ facet_wrap(~frame) + labs(title='Weight by Frame',x='Waist', y='Hip')
+ggplot(diabetes_clean,aes(y=hip,x=waist,alpha=0.5)) + geom_point(shape=1, size=.1)+ facet_wrap(~frame) + labs(title='Waist vs. Hip by Frame',x='Waist (in.)', y='Hip (in.)')
 ```
 
 
@@ -111,10 +129,20 @@ fit = lm(glyhb_star ~stab.glu + age + waist + ratio+ factor(frame),data=diabetes
 ```
 
 What insights can be obtain from this model? Explain clearly and make note of the F-statistic and adjusted R-squared. Do the results from our exploratory analysis suggest a linear model is the right approach here? You may reference plots and summary statistics from previous steps.
+```{r}
+#Based on these results, we can conclude that these variables are not significant because of how small the P-value is. We would choose to reject the null hypothesis based on the F-statistic. To improve this model, more variables could be added. 
+#Based on question 12, we think a linear model would be the right approach. If you look back at that question, you can see a positive linear relationship exists.
+```
+
 
 16. Interpret the estimated regression coefficient for each predictor in fit, regardless of whether or not the predictor is significant.
 ```{r}
-
+#For an increase of stabilized glucose, the fit increases by 0.0035.
+#For an increase of age by 1 year, the fit increases by 0.0034.
+#For an increse of waist by 1 inch, the fit increases by 0.0048.
+#For an increase of ratio, the fit increases by 0.0219.
+#For an increase of factor(frame)medium, the fit increases by 0.0309.
+#For an increase of factor(frame)small, the fit increases by 0.3750.
 ```
 
 17. We can see the estimated fitted values (Y^) from our model using the following code fit$fitted.values. These estimated fitted values are estimates of what true value? Based on the fit model, calculate the value of Y^ when stab.glu = 90, age = 35, waist = 30, ratio = 5.1, and frame = small.
@@ -124,12 +152,19 @@ What insights can be obtain from this model? Explain clearly and make note of th
 
 18.Explain the difference between inference and prediction.
 ```{r}
-#Inference is what you are given a data set and have to get an output from the date.
+#Inference is when you are given a data set and have to get an output from the date.
 #Prediction is getting another data set and seeing how the old data set helps to build a model.
 ```
 
 19. What are advantages/disadvantages to constructing a linear regression model as opposed to a k-NN regression model?
 ```{r}
+#Advantages- can see if positive or negatively relationship, parametric shape, easy to interpret and fit
+#Disadvantages- parametric shape, only will show something if linear, assumes the values are normally distributed
+```
 
+20. On your very first HW, I asked you what you think data science is. Have your views changed?
+Discuss with your partner what you have found to be (1) most surprising about data science, (2) most challenging, and (3) most enjoyable. Write a brief paragraph addressing these points.
+```{r}
+#We thought that data science is the study of analyzing information and knowledge from sets of data. We both agree that this is true. The amount of statistics that is used in data science was surprising to us both. The most challenging thing is when R doesn't want to work. We spent many nights in the basement of Pearson yelling at our screens because R kept crashing. Visualizations are our favorite thing to do. You can do a lot of cool things with it.
 ```
 
