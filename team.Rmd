@@ -1,6 +1,6 @@
 ---
 title: "Lab 5"
-author: "Omima Hassan"
+author: "Omima Hassan, Maureen McDonald"
 date: "11/10/2019"
 output: html_document
 ---
@@ -11,65 +11,64 @@ library(tidyr)
 library(tidyverse)
 ```
 
-For this lab, we’ll be working with the diabetes.txt dataset. This is available on Canvas under Files. There is a pdf called DiabetesExplanation.pdf that explains what each variable means, which should can be pulled directly from my Github account. Briefly, this data consist of 19 variables on 403 subjects who were interviewed in a study to understand the prevalence of obesity, diabetes, and other cardiovascular risk factors in central Virginia for African Americans. Our main variable of interest is glyhb, which stands for Glycosolated Hemoglobin. A high glyhb (> 7.0) is considered an indicator for positive diagnosis of diabetes.
 
+## *Processing the data*
+
+1.
 ```{r}
 diabetes = read.table('diabetes.txt', header=TRUE)
 head(diabetes)
 ```
 
-2.Replace the missing values in the variable frame, indicated by an empty string ‘’, by ‘NA’. 
+2.
 ```{r}
-diabetes_frame = which(diabetes$frame == '')
-diabetes$frame[diabetes_frame]= "NA"
+diabetes$frame[diabetes$frame == ''] = NA
+diabetes$frame = droplevels(diabetes$frame)
 ```
 
-Also, use function droplevels() to remove empty categorical value ‘’ from frame.
-```{r}
-
-```
-
-3.Drop id, bp.2s, and bp.2d from our dataset. Call this dataset diabetes_reduced.
+3.
 ```{r}
 diabetes_reduced = subset(diabetes, select = -c(id, bp.2s, bp.2d))
 ```
 
 
-4.Using diabetes_reduced, drop any rows having any missing values. Call this new dataset diabetes_clean. For the remaining questions, use this diabetes_clean dataset. Your clean dataset should have 366 rows and 16 columns. To identify the row indices that have a missing value you can use this code:
-
+4.
 ```{r}
 diabetes_clean = na.omit(diabetes_reduced)
 ```
 
-5.How can we check Step 4 was done correctly?
+
+## *Exploring and transforming data*
+5.
 ```{r}
 nrow(diabetes_clean)
 ncol(diabetes_clean)
 ```
 
+6. -- Need to finish, find a downside to using log 
+* Using the log base along the x-axis. The downside to this is that .... 
 
-6.We see that glyhb is highly right skewed. How can we remedy this? What are some potential downsides to our approach? (throwback to Lecture 7 and fbi dataset).
+7.
 ```{r}
-# Using the log base along the x-axis. The down side to this is that the means are all the same.
+diabetes_clean$glyhb_star = log(diabetes_clean$glyhb)
+ggplot(diabetes_clean, aes(glyhb_star)) + geom_histogram() + labs(title = "Histogram of Glycosolated Hemoglobin", x = "Glycosolated Hemoglobin", y = "Amount in Patients")
 ```
 
-
-7.Based on your answer to (6), create a new variable called glyhb_star that is no longer right-skewed. Plot a histogram of glyhb_star to verify that the variable is symmetric. From now on use this glyhb_star variable.
+8. -- Need to finish explanations of each summary statistic 
 ```{r}
-glyhb_star = log(diabetes_clean$glyhb)
-ggplot(diabetes_clean, aes(glyhb_star)) + geom_histogram() + labs(title = "Histogram of Glycosolated Hemoglobin")
-```
-
-8. Let’s explore some summary statistics before jumping into visualizations. As mentioned before, our main variable of interest is glyhb_star, which is transformed version of glyhb. Create some tables of summary statistics of glyhb_star grouped by variables you are interested in and may help illuminate which variables are associated with diabetes. Describe your findings. For example:
-
-```{r}
-diabetes_clean %>% group_by(frame) %>% summarise(mean.glyhb = mean(glyhb_star))
 diabetes_clean %>% group_by(gender) %>% summarise(mean.glyhb = mean(glyhb_star))
 
+diabetes_clean %>% group_by(age) %>% summarise(mean.glyhb = mean(glyhb_star))
+
+diabetes_clean %>% group_by(weight) %>% summarise(mean.glyhb = mean(glyhb_star))
+
+diabetes_clean %>% group_by(height) %>% summarise(mean.glyhb = mean(glyhb_star))
+
 ```
 
 
-10.The following table is difficult to unpack. Create a plot to visualize the information. (Hint: look at lec12_script_updated.R and recall what we did for the starwars dataset.)
+## *Visualizations*
+10.
 ```{r}
 diabetes_clean%>% 
   group_by(frame,location) %>% 
@@ -78,93 +77,81 @@ diabetes_clean%>%
   geom_point()
 ```
 
-11. Our main variable of interest is glyhb_star. We want to understand its relationship with ratio, bp.1s, age, gender, hip and weight. Further explore how these variables interact and visualize your findings.
+11.
 ```{r}
-ggplot(diabetes_clean,aes(glyhb_star, ratio))+ geom_point(size=.5)+ geom_smooth()
+ggplot(diabetes_clean,aes(glyhb_star, ratio))+ geom_point(size=.5)+ geom_smooth() + labs(title = "Glycosolated Hemoglobin vs Ratio", x = "Glycosolated Hemoglobin", y = "Ratio")
 ```
 
 ```{r}
-ggplot(diabetes_clean,aes(glyhb_star, bp.1s))+ geom_point(size=.5)+ geom_smooth()
+ggplot(diabetes_clean,aes(glyhb_star, bp.1s))+ geom_point(size=.5)+ geom_smooth() + labs(title = "Glycosolated Hemoglobin vs First Systolic Blood Pressure", x = "Glycosolated Hemoglobin", y = "First Systolic Blood Pressure")
+```
+
+
+```{r}
+ggplot(diabetes_clean,aes(glyhb_star, age))+ geom_point(size=.5)+ geom_smooth() + labs(title = "Glycosolated Hemoglobin vs Age", x = "Glycosolated Hemoglobin", y = "Age")
 ```
 
 ```{r}
-ggplot(diabetes_clean,aes(glyhb_star, age))+ geom_point(size=.5)+ geom_smooth()
+ggplot(diabetes_clean,aes(gender,glyhb_star))+ geom_boxplot() + labs(title = "Glycosolated Hemoglobin vs Gender", x = "Gender", y = "Glycosolated Hemoglobin")
 ```
 
 ```{r}
-ggplot(diabetes_clean,aes(gender,glyhb_star))+ geom_boxplot()
+ggplot(diabetes_clean,aes(glyhb_star, hip))+ geom_point(size=.5)+ geom_smooth() + labs(title = "Glycosolated Hemoglobin vs Hip (inches)", x = "Glycosolated Hemoglobin", y = "Hip (inches)")
 ```
 
 ```{r}
-ggplot(diabetes_clean,aes(glyhb_star, hip))+ geom_point(size=.5)+ geom_smooth()
+ggplot(diabetes_clean,aes(glyhb_star, weight))+ geom_point(size=.5)+ geom_smooth() + labs(title = "Glycosolated Hemoglobin vs weight (pounds)", x = "Glycosolated Hemoglobin", y = "Weight (pounds)")
 ```
 
+12.
 ```{r}
-ggplot(diabetes_clean,aes(glyhb_star, weight))+ geom_point(size=.5)+ geom_smooth()
+ggplot(diabetes_clean,aes(y=hip,x=waist,alpha = 0.5)) + geom_point(shape=1, size=.4)+ facet_wrap(~frame) + labs(title='Waist vs. Hip by Frame',x='Waist (in.)', y='Hip (in.)')
 ```
 
-12. Write code to improve this plot so that we can see the distinct patterns for weight and waist across different frame and avoid overplotting. Propose two different plots.
-```{r}
-ggplot(diabetes_clean,aes(y=hip,x=waist,alpha=0.5)) + geom_point(shape=1, size=.1)+ facet_wrap(~frame) + labs(title='Waist vs. Hip by Frame',x='Waist (in.)', y='Hip (in.)')
-```
+## *Messy data*
+
+13.
+* Gather brings variables that could be collapsed together, to the same column.
+* Spread takes columns that have several forms of information, like date and time, that can be divided into different rows.
+
+14.
+* Gather and spread are not exact complements of each other because you cannot constantly go back and forth from spread and gather. As you gather the information it must all become one. If you spread the information it forgets about the original one, creating a completely new column.
 
 
-13.Gather and spread may seem slightly unnatural to use at first, but they are very powerful functions that can transform data into the right format. Explain in your own words what the gather and spread functions do.
-```{r}
-# Gather brings variables that could be collapsed together, to the same column.
-# Spread takes columns that have several forms of information, like date and time, that can be divided into different rows.
-```
-
-
-14. Are gather and spread exact complements of each other? Explain.
-```{r}
-#You cannot constantly go back and forth from spread and gather because as you gather the information it must all become one. If you spead it, it forgets about the original one, creating a completely new column.
-```
-
-
-15. We fit the following linear regression model:
+## *Regression models*
+15.
 ```{r}
 fit = lm(glyhb_star ~stab.glu + age + waist + ratio+ factor(frame),data=diabetes_clean)
- summary(fit)
+summary(fit)
 ```
 
-What insights can be obtain from this model? Explain clearly and make note of the F-statistic and adjusted R-squared. Do the results from our exploratory analysis suggest a linear model is the right approach here? You may reference plots and summary statistics from previous steps.
-```{r}
-#Based on these results, we can conclude that these variables are not significant because of how small the P-value is. We would choose to reject the null hypothesis based on the F-statistic. To improve this model, more variables could be added. 
-#Based on question 12, we think a linear model would be the right approach. If you look back at that question, you can see a positive linear relationship exists.
-```
+* Based on these results, we can conclude that these variables are not significant because of how small the P-value is. We would then choose to reject the null hypothesis based on that. To improve this model, more variables could be added. 
+Based on question 12, we think a linear model would be the right approach. If you look back at that question, you can see that a positive linear relationship exists.
 
 
-16. Interpret the estimated regression coefficient for each predictor in fit, regardless of whether or not the predictor is significant.
-```{r}
-#For an increase of stabilized glucose, the fit increases by 0.0035.
-#For an increase of age by 1 year, the fit increases by 0.0034.
-#For an increse of waist by 1 inch, the fit increases by 0.0048.
-#For an increase of ratio, the fit increases by 0.0219.
-#For an increase of factor(frame)medium, the fit increases by 0.0309.
-#For an increase of factor(frame)small, the fit increases by 0.3750.
-```
+16.
+* For an increase of stabilized glucose, the fit increases by 0.0035.
+* For an increase of age by 1 year, the fit increases by 0.0034.
+* For an increse of waist by 1 inch, the fit increases by 0.0048.
+* For an increase of ratio, the fit increases by 0.0219.
+* For an increase of factor(frame)medium, the fit increases by 0.0309.
+* For an increase of factor(frame)small, the fit increases by 0.3750.
 
-17. We can see the estimated fitted values (Y^) from our model using the following code fit$fitted.values. These estimated fitted values are estimates of what true value? Based on the fit model, calculate the value of Y^ when stab.glu = 90, age = 35, waist = 30, ratio = 5.1, and frame = small.
+
+17. - Need to finish
 ```{r}
 
 ```
 
-18.Explain the difference between inference and prediction.
-```{r}
-#Inference is when you are given a data set and have to get an output from the date.
-#Prediction is getting another data set and seeing how the old data set helps to build a model.
-```
 
-19. What are advantages/disadvantages to constructing a linear regression model as opposed to a k-NN regression model?
-```{r}
-#Advantages- can see if positive or negatively relationship, parametric shape, easy to interpret and fit
-#Disadvantages- parametric shape, only will show something if linear, assumes the values are normally distributed
-```
+18.
+* Inference is when you are given a data set and have to get an output from the date.
+* Prediction is getting another data set and seeing how the old data set helps to build a model.
 
-20. On your very first HW, I asked you what you think data science is. Have your views changed?
-Discuss with your partner what you have found to be (1) most surprising about data science, (2) most challenging, and (3) most enjoyable. Write a brief paragraph addressing these points.
-```{r}
-#We thought that data science is the study of analyzing information and knowledge from sets of data. We both agree that this is true. The amount of statistics that is used in data science was surprising to us both. The most challenging thing is when R doesn't want to work. We spent many nights in the basement of Pearson yelling at our screens because R kept crashing. Visualizations are our favorite thing to do. You can do a lot of cool things with it.
-```
+19.
+* Advantages- can see if positive or negatively relationship, parametric shape, easy to interpret and fit
+* Disadvantages- parametric shape, only will show something if linear, assumes the values are normally distributed
 
+## *Reflection*
+20.
+* We thought that data science is the study of analyzing information and knowledge from sets of data. We both agree that this is true. The amount of statistics that is used in data science was surprising to us both. The most challenging thing is when R doesn't want to work. We spent many nights in the basement of Pearson yelling at our screens because R kept crashing. Visualizations are our favorite thing to do. You can do a lot of cool things with it.
