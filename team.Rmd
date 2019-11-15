@@ -54,7 +54,7 @@ diabetes_clean$glyhb_star = log(diabetes_clean$glyhb)
 ggplot(diabetes_clean, aes(glyhb_star)) + geom_histogram() + labs(title = "Histogram of Glycosolated Hemoglobin", x = "Glycosolated Hemoglobin", y = "Amount in Patients")
 ```
 
-8. -- Need to finish explanations of each summary statistic 
+8. 
 ```{r}
 diabetes_clean %>% group_by(gender) %>% summarise(mean.glyhb = mean(glyhb_star))
 
