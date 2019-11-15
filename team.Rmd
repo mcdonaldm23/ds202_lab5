@@ -45,8 +45,8 @@ nrow(diabetes_clean)
 ncol(diabetes_clean)
 ```
 
-6. -- Need to finish, find a downside to using log 
-* Using the log base along the x-axis. The downside to this is that .... 
+6.
+* Using the log base along the x-axis. The downside to this is that the values are now smaller.  
 
 7.
 ```{r}
@@ -66,6 +66,14 @@ diabetes_clean %>% group_by(height) %>% summarise(mean.glyhb = mean(glyhb_star))
 
 ```
 
+
+* Gender and mean Glycosolated Hemoglobin. In terms of gender the mean amount of hemoglobin is about the same for males and females. 
+
+* Age and mean Glycosolated Hemoglobin. In terms of age there isn't a clear relationship on whether mean amount of hemoglobin is higher for those who are older although some values could indicate that.
+
+* Weight and mean Glycosolated Hemoglobin. In terms of weight those who weigh more don't seem to have a higher amount of hemoglobin than those who way less, again outliers do exist where values for mean hemoglobin for those who weigh less are more than those who weigh more.
+
+* Height and Glycosolated Hemoglobin. In terms of height those who are taller have a higher mean value for glycosolated hemoglobin.
 
 ## *Visualizations*
 10.
@@ -138,10 +146,10 @@ Based on question 12, we think a linear model would be the right approach. If yo
 * For an increase of factor(frame)small, the fit increases by 0.3750.
 
 
-17. - Need to finish
-```{r}
+17.
+* The true value is the average  amount of glycosolated hemoglobin when a persons frame = large and stabilized glucose is 0 and age, waist, and ratio are not all equal to 0 but one of them is.
 
-```
+* $\hat{Y}$ =  0.8330897 + 90*stab.glu + 35*age + 30*waist + 5.1*ratio + 0.0131840*FrameSmall  
 
 
 18.
